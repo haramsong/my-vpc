@@ -1,0 +1,82 @@
+name: Deploy to S3 on PR Merge
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-if-terraform-valid:
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    env:
+      BACKEND_STORE_NAME: ${{ secrets.BACKEND_STORE_NAME }}
+      PARAMETER_STORE_NAME: ${{ secrets.PARAMETER_STORE_NAME }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.11.1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get backend configuration from SSM Parameter Store
+        run: |
+          aws ssm get-parameter \
+            --name $BACKEND_STORE_NAME \
+            --query Parameter.Value \
+            --output text > state.config
+
+      - name: Initialize Terraform
+        run: |
+          terraform init -backend-config=state.config
+
+      - name: Get terraform configuration from SSM Parameter Store
+        run: |
+          aws ssm get-parameter \
+            --name $PARAMETER_STORE_NAME \
+            --query Parameter.Value \
+            --output text > terraform.tfvars
+
+      - name: Terraform Apply Roles
+        run: terraform apply -target=module.role --auto-approve
+
+      - name: Terraform Plan (output as binary)
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Show (JSON)
+        id: show
+        run: |
+          terraform show -json tfplan > plan.json
+
+      - name: Parse Terraform Summary
+        id: summary
+        run: |
+          ADDED=$(jq '[.resource_changes[] | select(.change.actions | index("create"))] | length' plan.json)
+          CHANGED=$(jq '[.resource_changes[] | select(.change.actions | index("update"))] | length' plan.json)
+          DESTROYED=$(jq '[.resource_changes[] | select(.change.actions | index("delete"))] | length' plan.json)
+
+          echo "### Terraform Plan Summary" > comment.txt
+          echo "" >> comment.txt
+          echo "- 📦 Add: \`${ADDED}\`" >> comment.txt
+          echo "- 🔄 Change: \`${CHANGED}\`" >> comment.txt
+          echo "- ❌ Destroy: \`${DESTROYED}\`" >> comment.txt
+
+      - name: Post PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: terraform-plan
+          path: comment.txt
