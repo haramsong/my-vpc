@@ -1,7 +1,7 @@
 resource "aws_security_group" "private_sg" {
   name        = "${var.project_name}-private-sg"
   description = "Security group for private subnets"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 0

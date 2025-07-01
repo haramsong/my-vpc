@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket = "" 
-    key    = "my-vpc/terraform.tfstate"
-    region = ""
-    profile= ""
+    bucket  = ""
+    key     = "my-vpc/terraform.tfstate"
+    region  = ""
+    profile = ""
   }
 }
