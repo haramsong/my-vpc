@@ -83,4 +83,4 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: terraform-plan
-          message: ${{ steps.summary.outputs.summary }}
+          path: comment.txt
