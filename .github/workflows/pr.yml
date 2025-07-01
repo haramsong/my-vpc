@@ -69,15 +69,11 @@ jobs:
           CHANGED=$(jq '[.resource_changes[] | select(.change.actions | index("update"))] | length' plan.json)
           DESTROYED=$(jq '[.resource_changes[] | select(.change.actions | index("delete"))] | length' plan.json)
 
-          SUMMARY="### Terraform Plan Summary\n\n"
-          SUMMARY+="- 📦 Add: \`${ADDED}\`\n"
-          SUMMARY+="- 🔄 Change: \`${CHANGED}\`\n"
-          SUMMARY+="- ❌ Destroy: \`${DESTROYED}\`\n"
-
-          echo "${SUMMARY}" > comment.txt
-          echo "summary<<EOF" >> $GITHUB_OUTPUT
-          echo "${SUMMARY}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "### Terraform Plan Summary" > comment.txt
+          echo "" >> comment.txt
+          echo "- 📦 Add: \`${ADD}\`" >> comment.txt
+          echo "- 🔄 Change: \`${CHANGE}\`" >> comment.txt
+          echo "- ❌ Destroy: \`${DESTROY}\`" >> comment.txt
 
       - name: Post PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
