@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "vpc_workspace_role_policy" {
       "ec2:*VpcAssociations",
       "ec2:*VpcAttribute",
       "ec2:*VpcBlockPublicAccess*",
-      "ec2:*RouteTable",
+      "ec2:*Route*",
       "ec2:DescribeRouteTables",
       "ec2:DescribeAvailabilityZones",
       "ec2:DescribeVpcs",
