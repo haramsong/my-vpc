@@ -50,6 +50,9 @@ jobs:
             --query Parameter.Value \
             --output text > terraform.tfvars
 
+      - name: Terraform Apply Roles
+        run: terraform apply -target=module.role --auto-approve
+
       - name: Terraform Plan (output as binary)
         run: terraform plan -out=tfplan
 
