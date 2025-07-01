@@ -1,0 +1,51 @@
+name: Deploy to S3 on PR Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      BACKEND_STORE_NAME: ${{ secrets.BACKEND_STORE_NAME }}
+      PARAMETER_STORE_NAME: ${{ secrets.PARAMETER_STORE_NAME }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.11.1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get backend configuration from SSM Parameter Store
+        run: |
+          aws ssm get-parameter \
+            --name $BACKEND_STORE_NAME \
+            --query Parameter.Value \
+            --output text > state.config
+
+      - name: Initialize Terraform
+        run: |
+          terraform init -backend-config=state.config
+
+      - name: Get terraform configuration from SSM Parameter Store
+        run: |
+          aws ssm get-parameter \
+            --name $PARAMETER_STORE_NAME \
+            --query Parameter.Value \
+            --output text > terraform.tfvars
+
+      - name: Apply Terraform
+        run: |
+          terraform apply --auto-approve
