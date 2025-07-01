@@ -50,33 +50,33 @@ jobs:
             --query Parameter.Value \
             --output text > terraform.tfvars
 
-            - name: Terraform Plan (output as binary)
-            run: terraform plan -out=tfplan
+      - name: Terraform Plan (output as binary)
+        run: terraform plan -out=tfplan
 
-          - name: Terraform Show (JSON)
-            id: show
-            run: |
-              terraform show -json tfplan > plan.json
+      - name: Terraform Show (JSON)
+        id: show
+        run: |
+          terraform show -json tfplan > plan.json
 
-          - name: Parse Terraform Summary
-            id: summary
-            run: |
-              ADDED=$(jq '[.resource_changes[] | select(.change.actions | index("create"))] | length' plan.json)
-              CHANGED=$(jq '[.resource_changes[] | select(.change.actions | index("update"))] | length' plan.json)
-              DESTROYED=$(jq '[.resource_changes[] | select(.change.actions | index("delete"))] | length' plan.json)
+      - name: Parse Terraform Summary
+        id: summary
+        run: |
+          ADDED=$(jq '[.resource_changes[] | select(.change.actions | index("create"))] | length' plan.json)
+          CHANGED=$(jq '[.resource_changes[] | select(.change.actions | index("update"))] | length' plan.json)
+          DESTROYED=$(jq '[.resource_changes[] | select(.change.actions | index("delete"))] | length' plan.json)
 
-              SUMMARY="### Terraform Plan Summary\n\n"
-              SUMMARY+="- 📦 Add: \`${ADDED}\`\n"
-              SUMMARY+="- 🔄 Change: \`${CHANGED}\`\n"
-              SUMMARY+="- ❌ Destroy: \`${DESTROYED}\`\n"
+          SUMMARY="### Terraform Plan Summary\n\n"
+          SUMMARY+="- 📦 Add: \`${ADDED}\`\n"
+          SUMMARY+="- 🔄 Change: \`${CHANGED}\`\n"
+          SUMMARY+="- ❌ Destroy: \`${DESTROYED}\`\n"
 
-              echo "${SUMMARY}" > comment.txt
-              echo "summary<<EOF" >> $GITHUB_OUTPUT
-              echo "${SUMMARY}" >> $GITHUB_OUTPUT
-              echo "EOF" >> $GITHUB_OUTPUT
+          echo "${SUMMARY}" > comment.txt
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          echo "${SUMMARY}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          - name: Post PR Comment
-            uses: marocchino/sticky-pull-request-comment@v2
-            with:
-              header: terraform-plan
-              message: ${{ steps.summary.outputs.summary }}
+      - name: Post PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: terraform-plan
+          message: ${{ steps.summary.outputs.summary }}
