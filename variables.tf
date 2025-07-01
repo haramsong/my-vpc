@@ -4,7 +4,9 @@ variable "project_name" {
 
 variable "region" {}
 
-variable "profile" {}
+variable "profile" {
+  default = null
+}
 
 variable "vpc_cidr" {
   sensitive = true
