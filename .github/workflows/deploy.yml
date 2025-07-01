@@ -1,4 +1,4 @@
-name: Deploy to S3 on PR Merge
+name: Apply Terraform
 
 on:
   push:
@@ -7,6 +7,11 @@ on:
 
 jobs:
   build-and-deploy:
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+
     runs-on: ubuntu-latest
 
     env:

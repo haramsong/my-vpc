@@ -1,4 +1,4 @@
-name: Deploy to S3 on PR Merge
+name: Terraform Plan Check
 
 on:
   pull_request:
