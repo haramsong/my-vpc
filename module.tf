@@ -6,6 +6,9 @@ module "role" {
   assume_role_name = var.assume_role_name
   role_name      = var.role_name
   vpc_role_name  = var.vpc_role_name
+  blog_role_name  = var.blog_role_name
+  blog_bucket_name = var.blog_bucket_name
+  route53_hosted_zone_id = var.route53_hosted_zone_id
 }
 
 module "vpc" {

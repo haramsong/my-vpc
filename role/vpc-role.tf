@@ -23,8 +23,8 @@ data "aws_iam_policy_document" "vpc_workspace_role_policy" {
 }
 
 resource "aws_iam_policy" "vpc_workspace_policy" {
-  name        = "HaramVPCPolicy"
-  description = "This policy is for haram vpc"
+  name        = "HaramBlogPolicy"
+  description = "This policy is for haram blog"
   policy      = data.aws_iam_policy_document.vpc_workspace_role_policy.json
 }
 
