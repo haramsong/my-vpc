@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  apply-terraform:
     permissions:
       id-token: write
       contents: read
@@ -37,7 +37,7 @@ jobs:
                     },
                     {
                       "title": "Branch",
-                      "value": "${{ github.head_ref }}",
+                      "value": "${{ github.ref_name }}",
                       "short": true
                     }
                   ]
