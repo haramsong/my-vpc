@@ -23,6 +23,7 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
       "s3:GetBucketCORS",
       "s3:PutBucketCORS",
       "s3:DeleteBucketCORS",
+      "s3:GetBucketWebsite"
     ]
     resources = [
       "arn:aws:s3:::${var.blog_bucket_name}",
