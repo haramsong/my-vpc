@@ -1,21 +1,22 @@
 data "aws_iam_policy_document" "blog_deploy_workspace_role_policy" {
+
   statement {
-    sid     = "ListAllMyBuckets"
-    effect  = "Allow"
-    actions = ["s3:ListAllMyBuckets"]
+    sid       = "ListAllMyBuckets"
+    effect    = "Allow"
+    actions   = ["s3:ListAllMyBuckets"]
     resources = ["arn:aws:s3:::*"]
   }
 
   statement {
-    sid     = "SettingBucket"
-    effect  = "Allow"
-    actions = ["s3:ListBucket"]
+    sid       = "SettingBucket"
+    effect    = "Allow"
+    actions   = ["s3:ListBucket"]
     resources = ["arn:aws:s3:::${var.blog_bucket_name}"]
   }
 
   statement {
-    sid     = "SettingBucketObjects"
-    effect  = "Allow"
+    sid    = "SettingBucketObjects"
+    effect = "Allow"
     actions = [
       "s3:GetObject",
       "s3:PutObject",
@@ -25,8 +26,8 @@ data "aws_iam_policy_document" "blog_deploy_workspace_role_policy" {
   }
 
   statement {
-    sid     = "GetParameter"
-    effect  = "Allow"
+    sid    = "GetParameter"
+    effect = "Allow"
     actions = [
       "ssm:GetParameter",
       "ssm:GetParameters",
@@ -39,8 +40,8 @@ data "aws_iam_policy_document" "blog_deploy_workspace_role_policy" {
   }
 
   statement {
-    sid     = "CreateInvalidation"
-    effect  = "Allow"
+    sid    = "CreateInvalidation"
+    effect = "Allow"
     actions = [
       "cloudfront:CreateInvalidation",
       "cloudfront:GetInvalidation",
