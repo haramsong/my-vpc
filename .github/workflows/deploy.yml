@@ -19,6 +19,35 @@ jobs:
       PARAMETER_STORE_NAME: ${{ secrets.PARAMETER_STORE_NAME }}
 
     steps:
+      - name: Notify Slack (start)
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "attachments": [
+                {
+                  "color": "#439FE0",
+                  "pretext": "🚀 Build started",
+                  "fields": [
+                    {
+                      "title": "Repo",
+                      "value": "${{ github.repository }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Branch",
+                      "value": "${{ github.head_ref }}",
+                      "short": true
+                    }
+                  ]
+                }
+              ]
+            }
+          author_name: haramsong
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Checkout Code
         uses: actions/checkout@v3
 
@@ -54,3 +83,14 @@ jobs:
       - name: Apply Terraform
         run: |
           terraform apply --auto-approve
+
+      - name: Notify Slack (result)
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: haramsong
+          fields: repo,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
