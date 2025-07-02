@@ -20,6 +20,9 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
       "s3:PutBucketAcl",
       "s3:GetObjectAcl",
       "s3:PutObjectAcl",
+      "s3:GetBucketCORS",
+      "s3:PutBucketCORS",
+      "s3:DeleteBucketCORS",
     ]
     resources = [
       "arn:aws:s3:::${var.blog_bucket_name}",
@@ -76,6 +79,7 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     actions = [
       "s3:ListBucket",
       "route53:ListHostedZones",
+      "route53:ListTagsForResource",
     ]
     resources = ["*"]
   }
