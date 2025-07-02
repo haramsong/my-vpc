@@ -35,3 +35,15 @@ variable "assume_role_name" {
 variable "vpc_role_name" {
   sensitive = true
 }
+
+variable "blog_role_name" {
+  sensitive = true
+}
+
+variable "blog_bucket_name" {
+  sensitive = true
+}
+
+variable "route53_hosted_zone_id" {
+  sensitive = true
+}
