@@ -7,7 +7,6 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     actions = [
       "s3:CreateBucket",
       "s3:DeleteBucket",
-      "s3:ListBucket",
       "s3:GetBucketPolicy",
       "s3:PutBucketPolicy",
       "s3:DeleteBucketPolicy",
@@ -17,8 +16,10 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
       "s3:GetObject",
       "s3:PutObject",
       "s3:DeleteObject",
-      "s3:ListBucketMultipartUploads",
-      "s3:AbortMultipartUpload",
+      "s3:GetBucketAcl",
+      "s3:PutBucketAcl",
+      "s3:GetObjectAcl",
+      "s3:PutObjectAcl",
     ]
     resources = [
       "arn:aws:s3:::${var.blog_bucket_name}",
@@ -45,6 +46,7 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
       "cloudfront:GetOriginAccessControl",
       "cloudfront:UpdateOriginAccessControl",
       "cloudfront:ListOriginAccessControls",
+      "cloudfront:DescribeFunction",
       "cloudfront:CreateFunction",
       "cloudfront:DeleteFunction",
       "cloudfront:GetFunction",
@@ -61,12 +63,21 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     actions = [
       "route53:ChangeResourceRecordSets",
       "route53:GetHostedZone",
-      "route53:ListHostedZones",
       "route53:ListResourceRecordSets",
     ]
     resources = [
       "arn:aws:route53:::hostedzone/${var.route53_hosted_zone_id}",
     ]
+  }
+
+  statement {
+    sid    = "GetList"
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "route53:ListHostedZones",
+    ]
+    resources = ["*"]
   }
 }
 
