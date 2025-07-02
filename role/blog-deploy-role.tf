@@ -68,7 +68,7 @@ resource "aws_iam_role" "blog_deploy_workspace_role" {
   assume_role_policy = data.aws_iam_policy_document.trust_relationship_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "attach_blog_policy_to_role" {
+resource "aws_iam_role_policy_attachment" "attach_blog_deploy_policy_to_role" {
   role       = aws_iam_role.blog_deploy_workspace_role.name
   policy_arn = aws_iam_policy.blog_deploy_workspace_policy.arn
   depends_on = [
