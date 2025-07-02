@@ -75,6 +75,7 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     effect = "Allow"
     actions = [
       "s3:ListBucket",
+      "cloudfront:ListTagsForResource",
       "route53:ListHostedZones",
       "route53:ListTagsForResource",
     ]
