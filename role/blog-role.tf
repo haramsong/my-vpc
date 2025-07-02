@@ -81,6 +81,51 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    sid    = "ManageDynamoDB"
+    effect = "Allow"
+    actions = [
+      "dynamodb:CreateTable",
+      "dynamodb:DeleteTable",
+      "dynamodb:DescribeTable",
+      "dynamodb:UpdateTable",
+      "dynamodb:PutItem",
+      "dynamodb:GetItem",
+      "dynamodb:UpdateItem"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ManageAPIGateway"
+    effect = "Allow"
+    actions = [
+      "apigateway:GET",
+      "apigateway:POST",
+      "apigateway:PUT",
+      "apigateway:DELETE",
+      "apigateway:PATCH"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ManageLambda"
+    effect = "Allow"
+    actions = [
+      "lambda:CreateFunction",
+      "lambda:UpdateFunctionCode",
+      "lambda:UpdateFunctionConfiguration",
+      "lambda:GetFunction",
+      "lambda:DeleteFunction",
+      "lambda:AddPermission",
+      "lambda:RemovePermission",
+      "iam:PassRole",
+      "iam:GetRole",
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "blog_workspace_policy" {

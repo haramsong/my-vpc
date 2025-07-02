@@ -44,6 +44,10 @@ variable "blog_deploy_role_name" {
   sensitive = true
 }
 
+variable "lambda_role_name" {
+  sensitive = true
+}
+
 variable "cdn_id" {
   sensitive = true
 }

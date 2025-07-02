@@ -19,3 +19,21 @@ data "aws_iam_policy_document" "trust_relationship_policy" {
     }
   }
 }
+
+data "aws_iam_policy_document" "lambda_trust_relationship_policy" {
+  version = "2012-10-17"
+  statement {
+    sid    = "AllowLambdaToAssumeRole"
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type = "Service"
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+    }
+  }
+}
