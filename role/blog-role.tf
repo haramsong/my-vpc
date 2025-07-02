@@ -5,26 +5,21 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     sid    = "AllowS3FullAccessToBucket"
     effect = "Allow"
     actions = [
+      "s3:Get*",
       "s3:CreateBucket",
       "s3:DeleteBucket",
-      "s3:GetBucketPolicy",
       "s3:PutBucketPolicy",
       "s3:DeleteBucketPolicy",
-      "s3:GetBucketPublicAccessBlock",
       "s3:PutBucketPublicAccessBlock",
       "s3:DeleteBucketPublicAccessBlock",
-      "s3:GetObject",
       "s3:PutObject",
       "s3:DeleteObject",
-      "s3:GetBucketAcl",
       "s3:PutBucketAcl",
-      "s3:GetObjectAcl",
       "s3:PutObjectAcl",
-      "s3:GetBucketCORS",
+      "s3:DeleteBucketAcl",
+      "s3:DeleteObjectAcl",
       "s3:PutBucketCORS",
       "s3:DeleteBucketCORS",
-      "s3:GetBucketWebsite",
-      "s3:GetBucketVersioning",
     ]
     resources = [
       "arn:aws:s3:::${var.blog_bucket_name}",
