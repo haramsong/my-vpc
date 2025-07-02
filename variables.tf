@@ -40,6 +40,14 @@ variable "blog_role_name" {
   sensitive = true
 }
 
+variable "blog_deploy_role_name" {
+  sensitive = true
+}
+
+variable "cdn_id" {
+  sensitive = true
+}
+
 variable "blog_bucket_name" {
   sensitive = true
 }

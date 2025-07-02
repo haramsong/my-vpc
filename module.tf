@@ -7,6 +7,8 @@ module "role" {
   role_name      = var.role_name
   vpc_role_name  = var.vpc_role_name
   blog_role_name  = var.blog_role_name
+  blog_deploy_role_name = var.blog_deploy_role_name
+  cdn_id        = var.cdn_id
   blog_bucket_name = var.blog_bucket_name
   route53_hosted_zone_id = var.route53_hosted_zone_id
 }
