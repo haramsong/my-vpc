@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "blog_deploy_workspace_role_policy" {
 
 resource "aws_iam_policy" "blog_deploy_workspace_policy" {
   name        = "HaramBlogDeployPolicy"
-  description = "This policy is for haram blog"
+  description = "This policy is for haram blog deployments"
   policy      = data.aws_iam_policy_document.blog_deploy_workspace_role_policy.json
 }
 
