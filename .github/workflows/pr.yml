@@ -115,7 +115,7 @@ jobs:
         with:
           status: ${{ job.status }}
           author_name: haramsong
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          fields: repo,workflow,job,took
           if_mention: failure,cancelled
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
