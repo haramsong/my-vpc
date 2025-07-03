@@ -9,6 +9,7 @@ module "role" {
   blog_role_name         = var.blog_role_name
   blog_deploy_role_name  = var.blog_deploy_role_name
   lambda_role_name       = var.lambda_role_name
+  cost_notifier_role_name = var.cost_notifier_role_name
   cdn_id                 = var.cdn_id
   blog_bucket_name       = var.blog_bucket_name
   route53_hosted_zone_id = var.route53_hosted_zone_id
