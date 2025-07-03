@@ -28,9 +28,13 @@ data "aws_iam_policy_document" "cost_notifier_workspace_role_policy" {
     effect = "Allow"
 
     actions = [
+      "events:ListTagsForResource",
+      "events:ListTargetsByRule",
+      "events:DescribeRule",
       "events:PutRule",
+      "events:DeleteRule",
       "events:PutTargets",
-      "events:DescribeRule"
+      "events:RemoveTargets",
     ]
 
     resources = ["*"]

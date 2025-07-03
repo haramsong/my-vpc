@@ -15,6 +15,10 @@ variable "aws_account_id" {
   sensitive = true
 }
 
-variable "cost_notifier_role_name" {
+variable "aws_role_arn" {
+  sensitive = true
+}
+
+variable "slack_webhook_url" {
   sensitive = true
 }

@@ -63,3 +63,7 @@ variable "blog_bucket_name" {
 variable "route53_hosted_zone_id" {
   sensitive = true
 }
+
+variable "slack_webhook_url" {
+  sensitive = true
+}
