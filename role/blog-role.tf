@@ -86,9 +86,10 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     sid    = "ManageDynamoDB"
     effect = "Allow"
     actions = [
+      "dynamodb:Describe*",
+      "dynamodb:ListTagsOfResource",
       "dynamodb:CreateTable",
       "dynamodb:DeleteTable",
-      "dynamodb:DescribeTable",
       "dynamodb:UpdateTable",
       "dynamodb:PutItem",
       "dynamodb:GetItem",
@@ -114,17 +115,29 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
     sid    = "ManageLambda"
     effect = "Allow"
     actions = [
+      "lambda:ListVersionsByFunction",
       "lambda:CreateFunction",
       "lambda:UpdateFunctionCode",
       "lambda:UpdateFunctionConfiguration",
       "lambda:GetFunction",
       "lambda:DeleteFunction",
+      "lambda:GetPolicy",
       "lambda:AddPermission",
       "lambda:RemovePermission",
+      "lambda:GetFunctionCodeSigningConfig",
+      "lambda:PutFunctionCodeSigningConfig",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "PassRoleToLambda"
+    effect = "Allow"
+    actions = [
       "iam:PassRole",
       "iam:GetRole",
     ]
-    resources = ["*"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.lambda_role_name}"]
   }
 }
 
