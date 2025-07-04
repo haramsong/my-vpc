@@ -36,18 +36,18 @@ data "aws_iam_policy_document" "lambda_cost_notify_policy" {
 
     actions = [
       "athena:StartQueryExecution",
-        "athena:GetQueryExecution",
-        "athena:GetQueryResults"
+      "athena:GetQueryExecution",
+      "athena:GetQueryResults"
     ]
 
     resources = ["*"]
   }
 
   statement {
-    sid      = "AllowGlueCatalogAccess"
-    effect   = "Allow"
-    
-    actions  = [
+    sid    = "AllowGlueCatalogAccess"
+    effect = "Allow"
+
+    actions = [
       "glue:GetDatabase",
       "glue:GetTable",
       "glue:GetPartition"
@@ -57,18 +57,18 @@ data "aws_iam_policy_document" "lambda_cost_notify_policy" {
   }
 
   statement {
-    sid   = "AllowPresignedUrlAccess"
+    sid    = "AllowPresignedUrlAccess"
     effect = "Allow"
 
     actions = [
       "s3:GetBucketLocation",
-        "s3:GetObject",
-        "s3:ListBucket",
-        "s3:ListBucketMultipartUploads",
-        "s3:ListMultipartUploadParts",
-        "s3:AbortMultipartUpload",
-        "s3:CreateBucket",
-        "s3:PutObject"
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListMultipartUploadParts",
+      "s3:AbortMultipartUpload",
+      "s3:CreateBucket",
+      "s3:PutObject"
     ]
 
     resources = [

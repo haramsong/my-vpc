@@ -11,26 +11,26 @@ data "aws_iam_policy_document" "cost_notifier_workspace_role_policy" {
   }
 
   statement {
-    sid      = "AllowGlueCatalogAccess"
-    effect   = "Allow"
-    
-    actions  = [
-       "glue:*"
+    sid    = "AllowGlueCatalogAccess"
+    effect = "Allow"
+
+    actions = [
+      "glue:*"
     ]
 
     resources = ["*"]
   }
 
   statement {
-    sid      = "AllowAthenaQuery"
-    effect   = "Allow"
-    
-    actions  = [
-       "athena:StartQueryExecution",
-        "athena:GetQueryExecution",
-        "athena:GetQueryResults",
-        "athena:GetWorkGroup",
-        "athena:StopQueryExecution"
+    sid    = "AllowAthenaQuery"
+    effect = "Allow"
+
+    actions = [
+      "athena:StartQueryExecution",
+      "athena:GetQueryExecution",
+      "athena:GetQueryResults",
+      "athena:GetWorkGroup",
+      "athena:StopQueryExecution"
     ]
 
     resources = ["*"]

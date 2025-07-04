@@ -40,11 +40,11 @@ resource "aws_s3_bucket_policy" "my_lop_bucket_policy" {
         Principal = {
           Service = "athena.amazonaws.com"
         },
-        Action   = "s3:*",
+        Action = "s3:*",
         Resource = [
           "arn:aws:s3:::${var.log_bucket_name}",
           "arn:aws:s3:::${var.log_bucket_name}/*",
-          ]
+        ]
       }
     ]
   })
