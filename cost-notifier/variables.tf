@@ -22,3 +22,7 @@ variable "aws_role_arn" {
 variable "slack_webhook_url" {
   sensitive = true
 }
+
+variable "cost_notifier_bucket_name" {
+  sensitive = true
+}

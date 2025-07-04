@@ -31,6 +31,22 @@ data "aws_iam_policy_document" "lambda_cost_notify_policy" {
   }
 
   statement {
+    sid   = "AllowPresignedUrlAccess"
+    effect = "Allow"
+
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:ListBucket"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.cost_notifier_bucket_name}",
+      "arn:aws:s3:::${var.cost_notifier_bucket_name}/*"
+    ]
+  }
+
+  statement {
     sid    = "AllowCloudWatchLogs"
     effect = "Allow"
 

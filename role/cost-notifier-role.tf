@@ -24,6 +24,31 @@ data "aws_iam_policy_document" "cost_notifier_workspace_role_policy" {
   }
 
   statement {
+    sid    = "AllowS3PutGet"
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+      "s3:Get*",
+      "s3:CreateBucket",
+      "s3:DeleteBucket",
+      "s3:PutBucketPolicy",
+      "s3:DeleteBucketPolicy",
+      "s3:PutBucketPublicAccessBlock",
+      "s3:PutBucketTagging",
+      "s3:PutObject",
+      "s3:DeleteObject",
+      "s3:PutBucketAcl",
+      "s3:PutObjectAcl",
+      "s3:PutBucketCORS",
+    ]
+    resources = [
+      "arn:aws:s3:::${var.cost_notifier_bucket_name}",
+      "arn:aws:s3:::${var.cost_notifier_bucket_name}/*",
+    ]
+  }
+
+  statement {
     sid    = "AllowEventBridgeInvoke"
     effect = "Allow"
 

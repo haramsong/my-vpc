@@ -60,6 +60,10 @@ variable "blog_bucket_name" {
   sensitive = true
 }
 
+variable "cost_notifier_bucket_name" {
+  sensitive = true
+}
+
 variable "route53_hosted_zone_id" {
   sensitive = true
 }

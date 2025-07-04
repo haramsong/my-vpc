@@ -11,15 +11,11 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
       "s3:PutBucketPolicy",
       "s3:DeleteBucketPolicy",
       "s3:PutBucketPublicAccessBlock",
-      "s3:DeleteBucketPublicAccessBlock",
       "s3:PutObject",
       "s3:DeleteObject",
       "s3:PutBucketAcl",
       "s3:PutObjectAcl",
-      "s3:DeleteBucketAcl",
-      "s3:DeleteObjectAcl",
       "s3:PutBucketCORS",
-      "s3:DeleteBucketCORS",
     ]
     resources = [
       "arn:aws:s3:::${var.blog_bucket_name}",

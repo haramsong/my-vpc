@@ -43,7 +43,7 @@ exports.handler = async () => {
     const thisMonthAmount =
       costThisMonth.ResultsByTime?.[0]?.Total?.UnblendedCost?.Amount || "0";
 
-    const message = `> *💸 ${thisMonth}월 ${todayDay}일 요금 정산 💸*\n` +
+    const message = `> *💸 ${thisMonth}월 ${todayDay}일 요금 정산 💸*\n\n` +
       `💰 어제( ${startYesterday} )의 AWS 사용 요금: *$${parseFloat(yesterdayAmount).toFixed(10)} USD*\n` +
       `📊 이번달 (${thisMonth}월) 누적 AWS 사용 요금: *$${parseFloat(thisMonthAmount).toFixed(10)} USD*`;
 
