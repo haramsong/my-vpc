@@ -31,18 +31,51 @@ data "aws_iam_policy_document" "lambda_cost_notify_policy" {
   }
 
   statement {
+    sid    = "AllowAthenaAccess"
+    effect = "Allow"
+
+    actions = [
+      "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid      = "AllowGlueCatalogAccess"
+    effect   = "Allow"
+    
+    actions  = [
+      "glue:GetDatabase",
+      "glue:GetTable",
+      "glue:GetPartition"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
     sid   = "AllowPresignedUrlAccess"
     effect = "Allow"
 
     actions = [
-      "s3:GetObject",
-      "s3:PutObject",
-      "s3:ListBucket"
+      "s3:GetBucketLocation",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListBucketMultipartUploads",
+        "s3:ListMultipartUploadParts",
+        "s3:AbortMultipartUpload",
+        "s3:CreateBucket",
+        "s3:PutObject"
     ]
 
     resources = [
       "arn:aws:s3:::${var.cost_notifier_bucket_name}",
-      "arn:aws:s3:::${var.cost_notifier_bucket_name}/*"
+      "arn:aws:s3:::${var.cost_notifier_bucket_name}/*",
+      "arn:aws:s3:::${var.log_bucket_name}",
+      "arn:aws:s3:::${var.log_bucket_name}/*"
     ]
   }
 

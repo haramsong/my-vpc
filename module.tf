@@ -12,6 +12,7 @@ module "role" {
   cost_notifier_role_name = var.cost_notifier_role_name
   cdn_id                  = var.cdn_id
   blog_bucket_name        = var.blog_bucket_name
+  log_bucket_name         = var.log_bucket_name
   cost_notifier_bucket_name = var.cost_notifier_bucket_name
   route53_hosted_zone_id  = var.route53_hosted_zone_id
 }
@@ -35,4 +36,5 @@ module "cost_notifier" {
   slack_webhook_url = var.slack_webhook_url
   aws_role_arn      = module.role.assume_cost_notifier_role_arn
   cost_notifier_bucket_name = var.cost_notifier_bucket_name
+  log_bucket_name   = var.log_bucket_name
 }

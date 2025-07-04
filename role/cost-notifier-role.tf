@@ -11,6 +11,32 @@ data "aws_iam_policy_document" "cost_notifier_workspace_role_policy" {
   }
 
   statement {
+    sid      = "AllowGlueCatalogAccess"
+    effect   = "Allow"
+    
+    actions  = [
+       "glue:*"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid      = "AllowAthenaQuery"
+    effect   = "Allow"
+    
+    actions  = [
+       "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults",
+        "athena:GetWorkGroup",
+        "athena:StopQueryExecution"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "AllowCloudWatchLogs"
     effect = "Allow"
 
@@ -28,23 +54,23 @@ data "aws_iam_policy_document" "cost_notifier_workspace_role_policy" {
     effect = "Allow"
     actions = [
       "s3:ListBucket",
-      "s3:GetBucketLocation",
       "s3:Get*",
       "s3:CreateBucket",
       "s3:DeleteBucket",
-      "s3:PutBucketPolicy",
-      "s3:DeleteBucketPolicy",
-      "s3:PutBucketPublicAccessBlock",
-      "s3:PutBucketTagging",
+      "s3:*BucketPolicy",
+      "s3:*PublicAccessBlock",
       "s3:PutObject",
       "s3:DeleteObject",
       "s3:PutBucketAcl",
       "s3:PutObjectAcl",
       "s3:PutBucketCORS",
+      "s3:*LifecycleConfiguration",
     ]
     resources = [
       "arn:aws:s3:::${var.cost_notifier_bucket_name}",
       "arn:aws:s3:::${var.cost_notifier_bucket_name}/*",
+      "arn:aws:s3:::${var.log_bucket_name}",
+      "arn:aws:s3:::${var.log_bucket_name}/*",
     ]
   }
 

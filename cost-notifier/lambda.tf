@@ -11,7 +11,7 @@ resource "aws_lambda_function" "daily_cost_notifier" {
   runtime          = "nodejs18.x"
   filename         = data.archive_file.daily_lambda_zip.output_path
   source_code_hash = data.archive_file.daily_lambda_zip.output_base64sha256
-
+  timeout          = 30
 
   environment {
     variables = {
@@ -33,13 +33,14 @@ resource "aws_lambda_function" "monthly_cost_notifier" {
   runtime          = "nodejs18.x"
   filename         = data.archive_file.monthly_lambda_zip.output_path
   source_code_hash = data.archive_file.monthly_lambda_zip.output_base64sha256
-
+  timeout          = 30
 
   environment {
     variables = {
       SLACK_WEBHOOK_URL = var.slack_webhook_url
       REGION            = var.region
       REPORT_BUCKET     = var.cost_notifier_bucket_name
+      LOG_BUCKET        = var.log_bucket_name
     }
   }
 }

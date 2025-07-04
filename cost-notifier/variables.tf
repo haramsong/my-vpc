@@ -26,3 +26,7 @@ variable "slack_webhook_url" {
 variable "cost_notifier_bucket_name" {
   sensitive = true
 }
+
+variable "log_bucket_name" {
+  sensitive = true
+}
