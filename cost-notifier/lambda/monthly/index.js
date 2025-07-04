@@ -126,7 +126,7 @@ exports.handler = async () => {
     const getObjectCommand = new GetObjectCommand({ Bucket: bucket, Key: key });
     const presignedUrl = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
 
-    const slackMessage = `📦 *${monthStr} 월별 AWS 서비스별 요금 보고서*\n\n💰 총 요금: *$${total.toFixed(2)} USD*\n${lines}\n📥 CSV 다운로드: <${presignedUrl}|클릭>`;
+    const slackMessage = `> 📦 *${monthStr} 월별 AWS 서비스별 요금 보고서*\n\n💰 총 요금: *$${total.toFixed(2)} USD*\n${lines}\n📥 CSV 다운로드: <${presignedUrl}|클릭>`;
     await postToSlack(slackMessage);
 
     return {
