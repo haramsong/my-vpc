@@ -39,11 +39,23 @@ variable "lambda_role_name" {
   sensitive = true
 }
 
+variable "cost_notifier_role_name" {
+  sensitive = true
+}
+
 variable "cdn_id" {
   sensitive = true
 }
 
 variable "blog_bucket_name" {
+  sensitive = true
+}
+
+variable "log_bucket_name" {
+  sensitive = true
+}
+
+variable "cost_notifier_bucket_name" {
   sensitive = true
 }
 

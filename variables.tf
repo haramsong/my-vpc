@@ -48,6 +48,10 @@ variable "lambda_role_name" {
   sensitive = true
 }
 
+variable "cost_notifier_role_name" {
+  sensitive = true
+}
+
 variable "cdn_id" {
   sensitive = true
 }
@@ -56,6 +60,18 @@ variable "blog_bucket_name" {
   sensitive = true
 }
 
+variable "log_bucket_name" {
+  sensitive = true
+}
+
+variable "cost_notifier_bucket_name" {
+  sensitive = true
+}
+
 variable "route53_hosted_zone_id" {
+  sensitive = true
+}
+
+variable "slack_webhook_url" {
   sensitive = true
 }
