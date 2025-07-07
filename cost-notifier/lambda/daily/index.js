@@ -19,33 +19,31 @@ exports.handler = async () => {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
 
   try {
-    // 어제 비용 조회
-    const costYesterday = await client.send(
-      new GetCostAndUsageCommand({
-        TimePeriod: { Start: startYesterday, End: todayDate },
-        Granularity: "DAILY",
-        Metrics: ["UnblendedCost"],
-      })
-    );
-
-    // 이번달 비용 조회
-    const costThisMonth = await client.send(
+    const result = await client.send(
       new GetCostAndUsageCommand({
         TimePeriod: { Start: startOfMonth, End: todayDate },
-        Granularity: "MONTHLY",
+        Granularity: "DAILY",
         Metrics: ["UnblendedCost"],
+        Filter: {
+          Dimensions: {
+            Key: "RECORD_TYPE",
+            Values: ["Usage"],
+          },
+        },
       })
     );
 
-    const yesterdayAmount =
-      costYesterday.ResultsByTime?.[0]?.Total?.UnblendedCost?.Amount || "0";
+    const results = result.ResultsByTime || [];
 
-    const thisMonthAmount =
-      costThisMonth.ResultsByTime?.[0]?.Total?.UnblendedCost?.Amount || "0";
+    const yesterdayCost = results.at(-1)?.Total?.UnblendedCost?.Amount || "0";
+    const monthlyCost = results.reduce((sum, day) => {
+      const amount = parseFloat(day.Total?.UnblendedCost?.Amount || "0");
+      return sum + amount;
+    }, 0);
 
     const message = `> *💸 ${thisMonth}월 ${todayDay}일 요금 정산 💸*\n\n` +
-      `💰 어제( ${startYesterday} )의 AWS 사용 요금: *$${parseFloat(yesterdayAmount).toFixed(10)} USD*\n` +
-      `📊 이번달 (${thisMonth}월) 누적 AWS 사용 요금: *$${parseFloat(thisMonthAmount).toFixed(10)} USD*`;
+      `💰 어제( ${startYesterday} )의 AWS 사용 요금: *$${parseFloat(yesterdayCost).toFixed(2)} USD*\n` +
+      `📊 이번달 (${thisMonth}월) 누적 AWS 사용 요금: *$${parseFloat(monthlyCost).toFixed(2)} USD*`;
 
     console.log("메세지 전송:", message);
     await postToSlack(message);

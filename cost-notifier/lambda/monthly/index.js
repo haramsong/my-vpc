@@ -71,6 +71,12 @@ exports.handler = async () => {
     TimePeriod: { Start: startStr, End: endStr },
     Granularity: "MONTHLY",
     Metrics: ["UnblendedCost"],
+    Filter: {
+      Dimensions: {
+        Key: "RECORD_TYPE",
+        Values: ["Usage"],
+      },
+    },
     GroupBy: [{ Type: "DIMENSION", Key: "SERVICE" }]
   });
 
