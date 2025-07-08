@@ -52,6 +52,10 @@ variable "cost_notifier_role_name" {
   sensitive = true
 }
 
+variable "security_alarm_role_name" {
+  sensitive = true
+}
+
 variable "cdn_id" {
   sensitive = true
 }
@@ -73,5 +77,9 @@ variable "route53_hosted_zone_id" {
 }
 
 variable "slack_webhook_url" {
+  sensitive = true
+}
+
+variable "security_slack_webhook_url" {
   sensitive = true
 }

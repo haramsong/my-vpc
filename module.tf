@@ -10,6 +10,7 @@ module "role" {
   blog_deploy_role_name     = var.blog_deploy_role_name
   lambda_role_name          = var.lambda_role_name
   cost_notifier_role_name   = var.cost_notifier_role_name
+  security_alarm_role_name  = var.security_alarm_role_name
   cdn_id                    = var.cdn_id
   blog_bucket_name          = var.blog_bucket_name
   log_bucket_name           = var.log_bucket_name
@@ -37,4 +38,13 @@ module "cost_notifier" {
   aws_role_arn              = module.role.assume_cost_notifier_role_arn
   cost_notifier_bucket_name = var.cost_notifier_bucket_name
   log_bucket_name           = var.log_bucket_name
+}
+
+module "security_alarm" {
+  source            = "./security-alarm"
+  region            = var.region
+  profile           = var.profile
+  aws_account_id    = var.aws_account_id
+  aws_role_arn      = module.role.assume_security_alarm_role_arn
+  slack_webhook_url = var.security_slack_webhook_url
 }

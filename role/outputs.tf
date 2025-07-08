@@ -10,4 +10,8 @@ output "assume_cost_notifier_role_arn" {
   depends_on = [aws_iam_role.cost_notifier_workspace_role]
 }
 
-
+output "assume_security_alarm_role_arn" {
+  sensitive  = true
+  value      = aws_iam_role.security_alarm_workspace_role.arn
+  depends_on = [aws_iam_role.security_alarm_workspace_role]
+}
