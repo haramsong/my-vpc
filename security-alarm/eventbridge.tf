@@ -14,6 +14,9 @@ locals {
     "CreateRole",
     "DeleteRole",
     "UpdateRolePolicy",
+    "CreateLoginProfile",
+    "UpdateLoginProfile",
+    "ResetServiceSpecificCredential",
 
     # S3
     "CreateBucket",
@@ -50,7 +53,24 @@ locals {
     "CreateKey",
     "ScheduleKeyDeletion",
     "CancelKeyDeletion",
-    "PutKeyPolicy"
+    "PutKeyPolicy",
+
+    # DynamoDB
+    "CreateTable",
+    "DeleteTable",
+    "UpdateTable",
+
+    # EKS/ECS
+    "CreateCluster",
+    "DeleteCluster",
+    "RunTask",
+    "StartTask",
+
+    # VPC/SG
+    "CreateSecurityGroup",
+    "AuthorizeSecurityGroupIngress",
+    "AuthorizeSecurityGroupEgress",
+    "ModifyVpcEndpoint",
   ]
 
   critical_service_sources = [
@@ -60,7 +80,10 @@ locals {
     "aws.rds",
     "aws.lambda",
     "aws.cloudtrail",
-    "aws.kms"
+    "aws.kms",
+    "aws.dynamodb",
+    "aws.ecs",
+    "aws.eks",
   ]
 
   critical_event_pattern = {
