@@ -108,3 +108,15 @@ resource "aws_iam_role_policy_attachment" "cost_notifier_basic_execution" {
   role       = aws_iam_role.lambda_cost_notifier_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
+
+
+resource "aws_iam_role" "lambda_security_alarm_role" {
+  name = "HaramEventBridgeLambdaRole"
+
+  assume_role_policy = data.aws_iam_policy_document.lambda_trust_relationship_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "security_alarm_basic_execution" {
+  role       = aws_iam_role.lambda_security_alarm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
