@@ -1,5 +1,5 @@
 variable "project_name" {
-  default = "haram"
+  default = "HaramProject"
 }
 
 variable "region" {}

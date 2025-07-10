@@ -1,5 +1,5 @@
 variable "project_name" {
-  default = "haram"
+  default = "HaramVPC"
 }
 
 variable "region" {}

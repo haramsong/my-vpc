@@ -1,5 +1,5 @@
 variable "project_name" {
-  default = "HaramRole"
+  default = "HaramCostNotifier"
   type    = string
 }
 
