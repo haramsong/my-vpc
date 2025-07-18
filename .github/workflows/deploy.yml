@@ -84,6 +84,13 @@ jobs:
         run: |
           terraform apply --auto-approve -no-color > apply.log 2>&1
 
+      - name: Read apply.log for Slack
+        id: log_snippet
+        run: |
+          echo 'LOG<<EOF' >> $GITHUB_OUTPUT
+          tail -n 20 apply.log >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
       - name: Notify Slack (result)
         uses: 8398a7/action-slack@v3
         with:
@@ -91,13 +98,16 @@ jobs:
           author_name: haramsong
           fields: repo,workflow,job,took
           if_mention: failure,cancelled
+          custom_payload: |
+            {
+              "text": "*Terraform Apply Result:* `${{ job.status }}`",
+              "attachments": [
+                {
+                  "color": "#cccccc",
+                  "text": "```[apply.log tail]\n${{ steps.log_snippet.outputs.LOG }}```"
+                }
+              ]
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: always()
-
-      - name: Upload apply.log to Slack
-        uses: adrey/slack-file-upload-action@master
-        with:
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          path: apply.log
-          channel: "#deployment-alarm"
