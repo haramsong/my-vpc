@@ -82,7 +82,7 @@ jobs:
 
       - name: Apply Terraform
         run: |
-          terraform apply --auto-approve
+          terraform apply --auto-approve -no-color > apply.log 2>&1
 
       - name: Notify Slack (result)
         uses: 8398a7/action-slack@v3
