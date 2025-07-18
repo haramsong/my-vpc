@@ -108,6 +108,18 @@ data "aws_iam_policy_document" "blog_workspace_role_policy" {
   }
 
   statement {
+    sid    = "GetCertificate"
+    effect = "Allow"
+    actions = [
+      "acm:GetCertificate",
+      "acm:DescribeCertificate",
+      "acm:ListCertificates",
+      "acm:ListTagsForCertificate",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "ManageLambda"
     effect = "Allow"
     actions = [
