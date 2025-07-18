@@ -81,10 +81,10 @@ jobs:
             --output text > terraform.tfvars
 
       - name: Terraform Apply Roles
-        run: terraform apply -target=module.role --auto-approve -no-color > apply_role.log 2>&1
+        run: terraform apply -target=module.role --auto-approve -no-color > apply.log 2>&1
 
       - name: Terraform Plan (output as binary)
-        run: terraform plan -no-color > tfplan
+        run: terraform plan -no-color out=tfplan > plan.log 2>&1
 
       - name: Terraform Show (JSON)
         id: show
