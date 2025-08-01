@@ -8,7 +8,7 @@ resource "aws_lambda_function" "daily_cost_notifier" {
   function_name    = "daily-cost-notifier"
   role             = "arn:aws:iam::${var.aws_account_id}:role/HaramCostNotifierLambdaRole"
   handler          = "index.handler"
-  runtime          = "nodejs18.x"
+  runtime          = "nodejs22.x"
   filename         = data.archive_file.daily_lambda_zip.output_path
   source_code_hash = data.archive_file.daily_lambda_zip.output_base64sha256
   timeout          = 30
@@ -30,7 +30,7 @@ resource "aws_lambda_function" "monthly_cost_notifier" {
   function_name    = "monthly-cost-notifier"
   role             = "arn:aws:iam::${var.aws_account_id}:role/HaramCostNotifierLambdaRole"
   handler          = "index.handler"
-  runtime          = "nodejs18.x"
+  runtime          = "nodejs22.x"
   filename         = data.archive_file.monthly_lambda_zip.output_path
   source_code_hash = data.archive_file.monthly_lambda_zip.output_base64sha256
   timeout          = 30
