@@ -44,3 +44,28 @@ resource "aws_lambda_function" "monthly_cost_notifier" {
     }
   }
 }
+
+data "archive_file" "msck_lambda_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/lambda/msck"
+  output_path = "${path.module}/msck.zip"
+}
+
+
+resource "aws_lambda_function" "athena_msck" {
+  function_name    = "cur-athena-msck"
+  role             = "arn:aws:iam::${var.aws_account_id}:role/HaramCostNotifierLambdaRole"
+  runtime          = "nodejs22.x"
+  handler          = "index.handler"
+  filename         = data.archive_file.msck_lambda_zip.output_path
+  source_code_hash = data.archive_file.msck_lambda_zip.output_base64sha256
+  timeout          = 30
+
+  environment {
+    variables = {
+      DATABASE = "cur_database"
+      TABLE    = "cost_and_usage_report"
+      OUTPUT   = "s3://${var.log_bucket_name}/msck/"
+    }
+  }
+}

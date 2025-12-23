@@ -36,24 +36,21 @@ resource "aws_lambda_permission" "allow_event" {
   source_arn    = aws_cloudwatch_event_rule.monthly_cost_notification.arn
 }
 
-resource "aws_cloudwatch_event_rule" "cur_partition_repair" {
-  name                = "cur-msck-repair-monthly"
+resource "aws_cloudwatch_event_rule" "cur_msck" {
+  name                = "cur-msck-monthly"
   schedule_expression = "cron(0 0 5 * ? *)"
 }
 
-resource "aws_cloudwatch_event_target" "athena_msck" {
-  rule     = aws_cloudwatch_event_rule.cur_partition_repair.name
-  target_id = "AthenaMsckTarget"
-  role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramEventbridgeAthenaMsckRole"
-  arn      = "arn:aws:athena:${var.region}:${data.aws_caller_identity.current.account_id}:workgroup/primary"
+resource "aws_cloudwatch_event_target" "msck_lambda" {
+  rule      = aws_cloudwatch_event_rule.cur_msck.name
+  target_id = "msckMonthly"
+  arn       = aws_lambda_function.athena_msck.arn
+}
 
-  input = jsonencode({
-    QueryString = "MSCK REPAIR TABLE cur_database.cost_and_usage_report;",
-    QueryExecutionContext = {
-      Database = "cur_database"
-    },
-    ResultConfiguration = {
-      OutputLocation = "s3://${var.log_bucket_name}/msck/"
-    }
-  })
+resource "aws_lambda_permission" "allow_msck_eventbridge" {
+  statement_id  = "AllowEventBridgeInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.athena_msck.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.cur_msck.arn
 }
