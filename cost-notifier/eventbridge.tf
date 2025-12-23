@@ -43,6 +43,7 @@ resource "aws_cloudwatch_event_rule" "cur_partition_repair" {
 
 resource "aws_cloudwatch_event_target" "athena_msck" {
   rule     = aws_cloudwatch_event_rule.cur_partition_repair.name
+  target_id = "AthenaMsckTarget"
   role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramEventbridgeAthenaMsckRole"
   arn      = "arn:aws:athena:${var.region}:${data.aws_caller_identity.current.account_id}:workgroup/primary"
 

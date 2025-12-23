@@ -175,7 +175,15 @@ resource "aws_iam_role_policy" "eventbridge_athena_policy" {
       {
         Effect = "Allow"
         Action = [
-          "athena:StartQueryExecution"
+          "athena:StartQueryExecution",
+          "athena:GetQueryExecution",
+          "athena:GetQueryResults",
+          "athena:StopQueryExecution",
+          "glue:GetDatabase",
+          "glue:GetTable",
+          "glue:GetPartitions",
+          "glue:UpdatePartition",
+          "glue:BatchCreatePartition"
         ]
         Resource = "*"
       },
