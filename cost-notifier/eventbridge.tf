@@ -35,3 +35,25 @@ resource "aws_lambda_permission" "allow_event" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.monthly_cost_notification.arn
 }
+
+resource "aws_cloudwatch_event_rule" "cur_partition_repair" {
+  name                = "cur-msck-repair-monthly"
+  schedule_expression = "cron(0 0 5 * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "athena_msck" {
+  rule     = aws_cloudwatch_event_rule.cur_partition_repair.name
+  target_id = "AthenaMsckTarget"
+  role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramEventbridgeAthenaMsckRole"
+  arn      = "arn:aws:athena:${var.region}:${data.aws_caller_identity.current.account_id}:workgroup/primary"
+
+  input = jsonencode({
+    QueryString = "MSCK REPAIR TABLE cur_database.cost_and_usage_report;",
+    QueryExecutionContext = {
+      Database = "cur_database"
+    },
+    ResultConfiguration = {
+      OutputLocation = "s3://${var.log_bucket_name}/msck/"
+    }
+  })
+}
