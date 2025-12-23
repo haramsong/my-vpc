@@ -50,7 +50,8 @@ data "aws_iam_policy_document" "lambda_cost_notify_policy" {
     actions = [
       "glue:GetDatabase",
       "glue:GetTable",
-      "glue:GetPartition"
+      "glue:GetPartition",
+      "glue:GetPartitions"
     ]
 
     resources = ["*"]
