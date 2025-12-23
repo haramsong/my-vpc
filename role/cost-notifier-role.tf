@@ -144,7 +144,7 @@ resource "aws_iam_role_policy_attachment" "attach_cost_notifier_policy_to_role" 
 }
 
 resource "aws_iam_role" "eventbridge_athena_role" {
-  name = "EventbridgeAthenaMsckRole"
+  name = "HaramEventbridgeAthenaMsckRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
