@@ -176,8 +176,8 @@ resource "aws_iam_role_policy" "eventbridge_athena_policy" {
           "s3:GetBucketLocation"
         ]
         Resource = [
-          "s3://${var.log_bucket_name}/msck/",
-          "s3://${var.log_bucket_name}/msck/*"
+          "arn:aws:s3:::${var.log_bucket_name}/msck/",
+          "arn:aws:s3:::${var.log_bucket_name}/msck/*"
         ]
       }
     ]
