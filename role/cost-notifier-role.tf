@@ -119,6 +119,16 @@ data "aws_iam_policy_document" "cost_notifier_workspace_role_policy" {
     ]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramCostNotifierLambdaRole"]
   }
+
+  statement {
+    sid    = "PassRoleToEventBridge"
+    effect = "Allow"
+    actions = [
+      "iam:PassRole",
+      "iam:GetRole",
+    ]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramEventbridgeAthenaMsckRole"]
+  }
 }
 
 
