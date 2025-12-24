@@ -34,7 +34,7 @@ exports.handler = async () => {
 
     const results = result.ResultsByTime || [];
 
-    console.log('어제자 집계 데이터: ', result.at(-1));
+    console.log('어제자 집계 데이터: ', results.at(-1));
 
     const yesterdayCost = results.at(-1)?.Total?.UnblendedCost?.Amount || "0";
     const monthlyCost = results.reduce((sum, day) => {
