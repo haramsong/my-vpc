@@ -87,9 +87,12 @@ exports.handler = async () => {
     let lines = '';
     for (const group of services) {
       const name = group.Keys[0];
-      const amount = parseFloat(group.Metrics.UnblendedCost.Amount).toFixed(2);
-      total += parseFloat(amount);
-      lines += (`- ${name} : $${amount} USD\n`);
+      const rawAmount = Number(group.Metrics.UnblendedCost.Amount);
+
+      if (rawAmount.toFixed(2) === "0.00") continue;
+
+      total += rawAmount;
+      lines += `    - ${name} : $${rawAmount.toFixed(2)} USD\n`;
     }
 
     const startCommand = new StartQueryExecutionCommand({

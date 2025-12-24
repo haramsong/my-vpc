@@ -30,24 +30,41 @@ exports.handler = async () => {
             Values: ["Usage"],
           },
         },
+        GroupBy: [
+          { Type: "DIMENSION", Key: "SERVICE" },
+        ],
       })
     );
 
     const results = result.ResultsByTime || [];
+    const latestDay = results.at(-1);
 
     console.log('이번달 집계 데이터: ', results);
+    console.log('어제자 예상 집계 데이터: ', latestDay);
 
-    console.log('어제자 집계 데이터: ', results.at(-1));
+    let message = `> *💸 ${thisMonth}월 ${todayDay}일 요금 정산 💸*\n\n`
 
-    const yesterdayCost = results.at(-1)?.Total?.UnblendedCost?.Amount || "0";
+    const yesterdayCost = latestDay?.Total?.UnblendedCost?.Amount || "0";
+    message += `💰 어제( ${startYesterday} )의 예상 AWS 사용 요금: *$${parseFloat(yesterdayCost).toFixed(2)} USD*\n`;
+
+    if (latestDay?.Groups) {
+      for (const group of latestDay.Groups) {
+        const serviceName = group.Keys[0];
+        const amount = Number(group.Metrics.UnblendedCost.Amount);
+
+        // 표시 기준 0원 제거
+        if (amount.toFixed(2) === "0.00") continue;
+
+        message += `    - ${serviceName} : $${amount.toFixed(2)} USD\n`;
+      }
+    }
+
     const monthlyCost = results.reduce((sum, day) => {
       const amount = parseFloat(day.Total?.UnblendedCost?.Amount || "0");
       return sum + amount;
     }, 0);
 
-    const message = `> *💸 ${thisMonth}월 ${todayDay}일 요금 정산 💸*\n\n` +
-      `💰 어제( ${startYesterday} )의 AWS 사용 요금: *$${parseFloat(yesterdayCost).toFixed(2)} USD*\n` +
-      `📊 이번달 (${thisMonth}월) 누적 AWS 사용 요금: *$${parseFloat(monthlyCost).toFixed(2)} USD*`;
+    message += `📊 이번달 (${thisMonth}월) 누적 예상 AWS 사용 요금: *$${parseFloat(monthlyCost).toFixed(2)} USD*`;
 
     console.log("메세지 전송:", message);
     await postToSlack(message);
