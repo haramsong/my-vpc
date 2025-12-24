@@ -65,7 +65,6 @@ function postToSlack(text) {
   });
 }
 
-
 exports.handler = async () => {
   const costCommand = new GetCostAndUsageCommand({
     TimePeriod: { Start: startStr, End: endStr },
