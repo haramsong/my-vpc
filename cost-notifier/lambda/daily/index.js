@@ -61,7 +61,7 @@ exports.handler = async () => {
         // 표시 기준 0원 제거
         if (amount.toFixed(2) === "0.00") continue;
 
-        message += `    - ${serviceName} : $${amount.toFixed(2)} USD\n`;
+        message += `    ●  ${serviceName} : $${amount.toFixed(2)} USD\n`;
       }
     }
 

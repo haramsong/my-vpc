@@ -92,7 +92,7 @@ exports.handler = async () => {
       if (rawAmount.toFixed(2) === "0.00") continue;
 
       total += rawAmount;
-      lines += `    - ${name} : $${rawAmount.toFixed(2)} USD\n`;
+      lines += `    ●  ${name} : $${rawAmount.toFixed(2)} USD\n`;
     }
 
     const startCommand = new StartQueryExecutionCommand({
