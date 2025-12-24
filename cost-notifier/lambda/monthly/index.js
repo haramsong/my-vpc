@@ -15,7 +15,7 @@ const s3 = new S3Client({ region: region });
 
 const now = new Date();
 const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-const end = new Date(now.getFullYear(), now.getMonth(), 1);
+const end = new Date(now.getFullYear(), now.getMonth(), 0);
 
 const formatDate = (date) => date.toISOString().split("T")[0];
 const startStr = formatDate(start);
@@ -130,7 +130,7 @@ exports.handler = async () => {
 
     const { bucket, key } = parseS3Uri(resultLocation);
     const getObjectCommand = new GetObjectCommand({ Bucket: bucket, Key: key });
-    const presignedUrl = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
+    const presignedUrl = await getSignedUrl(s3, getObjectCommand, { expiresIn: 7200 });
 
     const slackMessage = `> 📦 *${monthStr} 월별 AWS 서비스별 요금 보고서*\n\n💰 총 요금: *$${total.toFixed(2)} USD*\n${lines}\n📥 CSV 다운로드: <${presignedUrl}|클릭>`;
     await postToSlack(slackMessage);

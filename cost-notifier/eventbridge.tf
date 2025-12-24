@@ -1,6 +1,6 @@
 resource "aws_cloudwatch_event_rule" "daily_cost_notification" {
   name                = "daily-cost-notification"
-  schedule_expression = "cron(0 0 * * ? *)"
+  schedule_expression = "cron(0 4 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "daily_lambda_target" {
@@ -19,7 +19,7 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 
 resource "aws_cloudwatch_event_rule" "monthly_cost_notification" {
   name                = "monthly-cost-notify"
-  schedule_expression = "cron(0 0 1 * ? *)"
+  schedule_expression = "cron(0 4 1 * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "monthly_lambda_target" {

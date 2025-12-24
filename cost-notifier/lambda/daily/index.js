@@ -6,7 +6,6 @@ const client = new CostExplorerClient({ region: "us-east-1" });
 
 exports.handler = async () => {
   const now = new Date();
-  const todayDate = now.toISOString().split("T")[0];
   const todayDay = now.getDate();
   const thisMonth = now.getMonth() + 1;
 
@@ -21,7 +20,7 @@ exports.handler = async () => {
   try {
     const result = await client.send(
       new GetCostAndUsageCommand({
-        TimePeriod: { Start: startOfMonth, End: todayDate },
+        TimePeriod: { Start: startOfMonth, End: startYesterday },
         Granularity: "DAILY",
         Metrics: ["UnblendedCost"],
         Filter: {
@@ -34,6 +33,8 @@ exports.handler = async () => {
     );
 
     const results = result.ResultsByTime || [];
+
+    console.log('어제자 집계 데이터: ', result.at(-1));
 
     const yesterdayCost = results.at(-1)?.Total?.UnblendedCost?.Amount || "0";
     const monthlyCost = results.reduce((sum, day) => {
