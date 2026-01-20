@@ -1,5 +1,5 @@
 variable "project_name" {
-  default = "HaramCostNotifier"
+  default = "HaramSecurityAlarm"
   type    = string
 }
 
@@ -19,10 +19,18 @@ variable "slack_webhook_url" {
   sensitive = true
 }
 
-variable "cost_notifier_bucket_name" {
+variable "github_webhook_secret_name" {
   sensitive = true
 }
 
-variable "log_bucket_name" {
+variable "github_private_key_name" {
+  sensitive = true
+}
+
+variable "github_app_id" {
+  sensitive = true
+}
+
+variable "domain_name" {
   sensitive = true
 }

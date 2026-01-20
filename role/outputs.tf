@@ -15,3 +15,10 @@ output "assume_security_alarm_role_arn" {
   value      = aws_iam_role.security_alarm_workspace_role.arn
   depends_on = [aws_iam_role.security_alarm_workspace_role]
 }
+
+output "assume_pr_bot_role_arn" {
+  sensitive  = true
+  value      = aws_iam_role.pr_bot_workspace_role.arn
+  depends_on = [aws_iam_role.pr_bot_workspace_role]
+}
+

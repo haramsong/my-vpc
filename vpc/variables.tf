@@ -12,10 +12,6 @@ variable "aws_role_arn" {
   sensitive = true
 }
 
-variable "aws_account_id" {
-  sensitive = true
-}
-
 variable "vpc_cidr" {
   sensitive = true
 }

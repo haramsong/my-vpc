@@ -6,7 +6,7 @@ data "archive_file" "security_alert_lambda_zip" {
 
 resource "aws_lambda_function" "alert_lambda" {
   function_name    = "critical-event-alert-lambda"
-  role             = "arn:aws:iam::${var.aws_account_id}:role/HaramEventBridgeLambdaRole"
+  role             = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramEventBridgeLambdaRole"
   handler          = "index.handler"
   runtime          = "nodejs22.x"
   filename         = data.archive_file.security_alert_lambda_zip.output_path
