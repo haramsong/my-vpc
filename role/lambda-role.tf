@@ -147,6 +147,17 @@ data "aws_iam_policy_document" "invoke_steps" {
       "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${var.github_private_key_name}"
     ]
   }
+
+  statement {
+    sid     = "DBDedupeDeliveryId"
+    effect  = "Allow"
+    actions = [
+      "dynamodb:PutItem"
+    ]
+    resources = [
+      "arn:aws:dynamodb:${var.region}:${data.aws_caller_identity.current.account_id}:table/gitbot-github-webhook-delivery"
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "dispatcher_policy" {

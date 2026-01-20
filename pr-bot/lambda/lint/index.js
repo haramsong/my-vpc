@@ -1,45 +1,49 @@
-const https = require("https");
+import { withStep } from "./step-common/handler.js";
 
-const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+export const handler = withStep({
+  name: "lint / eslint",
 
-exports.handler = async (event) => {
-  const {
-    detail: { eventName, eventSource, userIdentity, requestParameters },
-    time,
-    region,
-    account
-  } = event;
+  async run({ event, octokit }) {
+    const { repository, pullRequest } = event;
 
-  const user = userIdentity?.userName || userIdentity?.principalId || "Unknown";
-  const paramsStr = requestParameters
-    ? JSON.stringify(requestParameters, null, 2).slice(0, 1000)
-    : "N/A";
+    const files = await octokit.paginate(
+      octokit.rest.pulls.listFiles,
+      {
+        owner: repository.owner,
+        repo: repository.name,
+        pull_number: pullRequest.number,
+        per_page: 100,
+      }
+    );
 
-  const message = `> *🚨 AWS 보안 경고 🚨*\n\n` +
-    `• *Event*: ${eventName}\n` +
-    `• *Service*: ${eventSource}\n` +
-    `• *User*: ${user}\n` +
-    `• *Account*: ${account}\n` +
-    `• *Region*: ${region}\n` +
-    `• *Time*: ${time}\n` +
-    `• *Params*:\n\`\`\`${paramsStr}\`\`\``;
+    const annotations = [];
 
-  await postToSlack(message);
-};
+    for (const f of files) {
+      if (f.filename.endsWith(".js")) {
+        // 예시: 일부러 annotation 많이 생성
+        annotations.push({
+          path: f.filename,
+          start_line: 1,
+          end_line: 1,
+          annotation_level: "warning",
+          message: "예시 lint 경고입니다.",
+        });
+      }
+    }
 
-function postToSlack(text) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify({ text });
-    const req = https.request(SLACK_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) }
-    }, (res) => {
-      res.statusCode === 200 ? resolve() : reject(new Error("Slack 전송 실패"));
-    });
+    if (annotations.length > 0) {
+      return {
+        conclusion: "neutral",
+        title: "Lint warnings",
+        summary: `${annotations.length}개의 lint 경고가 발견되었습니다.`,
+        annotations,
+      };
+    }
 
-    req.on("error", reject);
-    req.write(body);
-    req.end();
-  });
-}
-
+    return {
+      conclusion: "success",
+      title: "Lint passed",
+      summary: "Lint issue 없음",
+    };
+  },
+});

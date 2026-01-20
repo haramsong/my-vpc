@@ -59,5 +59,4 @@ module "pr_bot" {
   github_private_key_name   = var.github_private_key_name
   github_app_id = var.github_app_id
   domain_name = var.domain_name
-  acm_id = var.acm_id
 }

@@ -34,7 +34,3 @@ variable "github_app_id" {
 variable "domain_name" {
   sensitive = true
 }
-
-variable "acm_id" {
-  sensitive = true
-}

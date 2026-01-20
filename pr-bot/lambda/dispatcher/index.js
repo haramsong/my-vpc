@@ -1,45 +1,99 @@
-const https = require("https");
+import { verifyGithubSignature } from "./github.js";
+import { invokeStep } from "./invoke.js";
+import { claimDeliveryId } from "./dedupe.js";
 
-const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+export async function handler(event) {
+  try {
+    // HTTP API v2
+    const headers = event.headers || {};
+    const githubEvent = headers["x-github-event"];
+    const deliveryId = headers["x-github-delivery"];
+    const signature = headers["x-hub-signature-256"];
 
-exports.handler = async (event) => {
-  const {
-    detail: { eventName, eventSource, userIdentity, requestParameters },
-    time,
-    region,
-    account
-  } = event;
+    const rawBody = event.isBase64Encoded
+      ? Buffer.from(event.body, "base64")
+      : Buffer.from(event.body || "");
 
-  const user = userIdentity?.userName || userIdentity?.principalId || "Unknown";
-  const paramsStr = requestParameters
-    ? JSON.stringify(requestParameters, null, 2).slice(0, 1000)
-    : "N/A";
-
-  const message = `> *🚨 AWS 보안 경고 🚨*\n\n` +
-    `• *Event*: ${eventName}\n` +
-    `• *Service*: ${eventSource}\n` +
-    `• *User*: ${user}\n` +
-    `• *Account*: ${account}\n` +
-    `• *Region*: ${region}\n` +
-    `• *Time*: ${time}\n` +
-    `• *Params*:\n\`\`\`${paramsStr}\`\`\``;
-
-  await postToSlack(message);
-};
-
-function postToSlack(text) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify({ text });
-    const req = https.request(SLACK_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) }
-    }, (res) => {
-      res.statusCode === 200 ? resolve() : reject(new Error("Slack 전송 실패"));
+    // 1️⃣ 서명 검증
+    const valid = await verifyGithubSignature({
+      rawBody,
+      signature,
     });
 
-    req.on("error", reject);
-    req.write(body);
-    req.end();
-  });
+    if (!valid) {
+      console.warn("Invalid GitHub signature", deliveryId);
+      return { statusCode: 401, body: "invalid signature" };
+    }
+
+    const okToProcess = await claimDeliveryId(deliveryId);
+
+    if (!okToProcess) {
+      console.log("Duplicate delivery ignored:", deliveryId);
+      return ok(); // ✅ 중복이면 step 실행 안 하고 바로 200
+    }
+
+    const payload = JSON.parse(rawBody.toString("utf-8"));
+    const action = payload.action;
+
+    // 지금은 PR 이벤트만 처리
+    if (githubEvent !== "pull_request") {
+      return ok();
+    }
+
+    if (!["opened", "synchronize", "reopened"].includes(action)) {
+      return ok();
+    }
+
+    // 2️⃣ 공통 컨텍스트 생성
+    const ctx = {
+      deliveryId,
+      event: githubEvent,
+      action,
+      repository: {
+        owner: payload.repository.owner.login,
+        name: payload.repository.name,
+      },
+      pullRequest: {
+        number: payload.pull_request.number,
+        headSha: payload.pull_request.head.sha,
+      },
+    };
+
+    // 3️⃣ step 라우팅
+    const steps = [];
+
+    if (action === "opened") {
+      steps.push(
+        process.env.STEP_LINT_FUNCTION,
+        process.env.STEP_TEST_FUNCTION,
+        process.env.STEP_DEPENDENCY_FUNCTION,
+        // process.env.STEP_REVIEW_FUNCTION
+      );
+    }
+
+    if (action === "synchronize") {
+      steps.push(
+        process.env.STEP_LINT_FUNCTION,
+        process.env.STEP_TEST_FUNCTION
+      );
+    }
+
+    // 4️⃣ 비동기 invoke
+    await Promise.all(
+      steps.map((fn) => invokeStep(fn, ctx))
+    );
+
+    return ok();
+  } catch (err) {
+    console.error("dispatcher error", err);
+    // ❗ webhook retry 폭탄 방지
+    return ok();
+  }
 }
 
+function ok() {
+  return {
+    statusCode: 200,
+    body: "ok",
+  };
+}

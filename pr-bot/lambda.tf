@@ -26,6 +26,7 @@ resource "aws_lambda_function" "dispatcher" {
   environment {
     variables = {
       WEBHOOK_SECRET_SSM_NAME = var.github_webhook_secret_name
+      DEDUPE_TABLE_NAME = aws_dynamodb_table.github_webhook_delivery.name
 
       STEP_LINT_FUNCTION       = local.steps.lint
       STEP_TEST_FUNCTION       = local.steps.test

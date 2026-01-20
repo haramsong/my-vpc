@@ -23,6 +23,7 @@ data "aws_iam_policy_document" "pr_bot_policy" {
     actions = [
       "route53:ListHostedZones",
       "route53:ListTagsForResource",
+      "route53:GetChange",
     ]
     resources = ["*"]
   }
@@ -77,6 +78,7 @@ data "aws_iam_policy_document" "pr_bot_policy" {
       "lambda:AddPermission",
       "lambda:RemovePermission",
       "lambda:GetPolicy",
+      "lambda:GetFunctionCodeSigningConfig",
     ]
     resources = ["*"]
   }
@@ -127,10 +129,14 @@ data "aws_iam_policy_document" "pr_bot_policy" {
       "dynamodb:DeleteTable",
       "dynamodb:DescribeTable",
       "dynamodb:UpdateTable",
+      "dynamodb:UpdateTimeToLive",
       "dynamodb:PutItem",
       "dynamodb:GetItem",
       "dynamodb:UpdateItem",
-      "dynamodb:ListTagsOfResource"
+      "dynamodb:ListTagsOfResource",
+      "dynamodb:DescribeContinuousBackups",
+      "dynamodb:DescribeTimeToLive",
+      "dynamodb:UpdateContinuousBackups",
     ]
     resources = ["*"]
   }

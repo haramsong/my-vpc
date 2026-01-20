@@ -1,45 +1,99 @@
-const https = require("https");
+import { getCoverageSummaryFromWorkflow } from "./step-common/github.js";
 
-const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+const COVERAGE_DROP_FAIL = 5; // %p
+const COVERAGE_DROP_WARN = 1; // %p
 
-exports.handler = async (event) => {
-  const {
-    detail: { eventName, eventSource, userIdentity, requestParameters },
-    time,
-    region,
-    account
-  } = event;
+export const handler = withStep({
+  name: "test / coverage",
 
-  const user = userIdentity?.userName || userIdentity?.principalId || "Unknown";
-  const paramsStr = requestParameters
-    ? JSON.stringify(requestParameters, null, 2).slice(0, 1000)
-    : "N/A";
+  async run({ event, octokit }) {
+    const { repository, pullRequest } = event;
 
-  const message = `> *🚨 AWS 보안 경고 🚨*\n\n` +
-    `• *Event*: ${eventName}\n` +
-    `• *Service*: ${eventSource}\n` +
-    `• *User*: ${user}\n` +
-    `• *Account*: ${account}\n` +
-    `• *Region*: ${region}\n` +
-    `• *Time*: ${time}\n` +
-    `• *Params*:\n\`\`\`${paramsStr}\`\`\``;
-
-  await postToSlack(message);
-};
-
-function postToSlack(text) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify({ text });
-    const req = https.request(SLACK_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) }
-    }, (res) => {
-      res.statusCode === 200 ? resolve() : reject(new Error("Slack 전송 실패"));
+    // head coverage
+    const head = await getCoverageSummaryFromWorkflow({
+      octokit,
+      owner: repository.owner,
+      repo: repository.name,
+      headSha: pullRequest.headSha,
+      workflowName: "test",
     });
 
-    req.on("error", reject);
-    req.write(body);
-    req.end();
-  });
-}
+    if (!head) {
+      return {
+        conclusion: "neutral",
+        title: "Coverage missing",
+        summary: `
+        Coverage artifact를 찾지 못했습니다.
 
+        아래와 같이 GitHub Actions 설정이 필요합니다:
+
+        \`\`\`yaml
+        name: test
+
+        on:
+          pull_request:
+
+        jobs:
+          test:
+            runs-on: ubuntu-latest
+            steps:
+              - uses: actions/checkout@v4
+
+              - uses: actions/setup-node@v4
+                with:
+                  node-version: 20
+
+              - run: npm ci
+              - run: npm test -- --coverage --coverageReporters=json-summary
+
+              - uses: actions/upload-artifact@v4
+                with:
+                  name: coverage
+                  path: coverage/coverage-summary.json
+        \`\`\`
+
+        확인 사항:
+        - upload-artifact step 존재 여부
+        - artifact name: \`coverage\`
+        - path: \`coverage/coverage-summary.json\`
+        `.trim(),
+      };
+    }
+
+    // base coverage
+    const base = await getCoverageSummaryFromWorkflow({
+      octokit,
+      owner: repository.owner,
+      repo: repository.name,
+      headSha: pullRequest.baseSha,
+      workflowName: "test",
+    });
+
+    const headLines = head.lines.pct;
+    const baseLines = base?.lines?.pct;
+
+    let diffLine = "";
+    let conclusion = "success";
+
+    if (typeof baseLines === "number") {
+      const diff = +(headLines - baseLines).toFixed(2);
+
+      diffLine = `\n\nCoverage diff: ${baseLines}% → ${headLines}% (${diff > 0 ? "+" : ""}${diff}%)`;
+
+      if (diff < -COVERAGE_DROP_FAIL) {
+        conclusion = "failure";
+      } else if (diff < -COVERAGE_DROP_WARN) {
+        conclusion = "neutral";
+      }
+    }
+
+    return {
+      conclusion,
+      title: "Coverage result",
+      summary: `
+      라인 커버리지: ${headLines}%
+      ${diffLine}
+      `.trim(),
+    };
+  },
+});
