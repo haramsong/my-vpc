@@ -149,8 +149,8 @@ data "aws_iam_policy_document" "invoke_steps" {
   }
 
   statement {
-    sid     = "DBDedupeDeliveryId"
-    effect  = "Allow"
+    sid    = "DBDedupeDeliveryId"
+    effect = "Allow"
     actions = [
       "dynamodb:PutItem"
     ]
