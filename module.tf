@@ -25,7 +25,6 @@ module "vpc" {
   source         = "./vpc"
   region         = var.region
   profile        = var.profile
-  aws_account_id = var.aws_account_id
   vpc_prefix     = var.vpc_prefix
   vpc_cidr       = var.vpc_cidr
   subnet_block   = var.subnet_block
@@ -36,7 +35,6 @@ module "cost_notifier" {
   source                    = "./cost-notifier"
   region                    = var.region
   profile                   = var.profile
-  aws_account_id            = var.aws_account_id
   slack_webhook_url         = var.slack_webhook_url
   aws_role_arn              = module.role.assume_cost_notifier_role_arn
   cost_notifier_bucket_name = var.cost_notifier_bucket_name
@@ -47,7 +45,6 @@ module "security_alarm" {
   source            = "./security-alarm"
   region            = var.region
   profile           = var.profile
-  aws_account_id    = var.aws_account_id
   aws_role_arn      = module.role.assume_security_alarm_role_arn
   slack_webhook_url = var.security_slack_webhook_url
 }
@@ -56,7 +53,6 @@ module "pr_bot" {
   source            = "./pr-bot"
   region            = var.region
   profile           = var.profile
-  aws_account_id    = var.aws_account_id
   aws_role_arn      = module.role.assume_pr_bot_role_arn
   slack_webhook_url = var.security_slack_webhook_url
   github_webhook_secret_name = var.github_webhook_secret_name

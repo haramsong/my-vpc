@@ -13,7 +13,7 @@ data "archive_file" "step_zip" {
 
 resource "aws_lambda_function" "dispatcher" {
   function_name = "${local.name}-webhook-dispatcher"
-  role          = "arn:aws:iam::${var.aws_account_id}:role/HaramPRBotLambdaRole"
+  role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramPRBotLambdaRole"
   runtime       = "nodejs22.x"
   handler       = "index.handler"
 
@@ -46,7 +46,7 @@ resource "aws_lambda_function" "step" {
   for_each = local.steps
 
   function_name = each.value
-  role          = "arn:aws:iam::${var.aws_account_id}:role/HaramPRBotLambdaRole"
+  role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramPRBotLambdaRole"
   runtime       = "nodejs22.x"
   handler       = "index.handler"
 
