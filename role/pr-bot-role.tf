@@ -11,11 +11,20 @@ data "aws_iam_policy_document" "pr_bot_policy" {
       "route53:ChangeResourceRecordSets",
       "route53:GetHostedZone",
       "route53:ListResourceRecordSets",
-      "route53:ListHostedZones",
     ]
     resources = [
       "arn:aws:route53:::hostedzone/${var.route53_hosted_zone_id}"
     ]
+  }
+
+  statement {
+    sid    = "GetList"
+    effect = "Allow"
+    actions = [
+      "route53:ListHostedZones",
+      "route53:ListTagsForResource",
+    ]
+    resources = ["*"]
   }
 
   # =====================
@@ -102,7 +111,8 @@ data "aws_iam_policy_document" "pr_bot_policy" {
       "ssm:DescribeParameters"
     ]
     resources = [
-      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/github-app/*"
+      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${var.github_webhook_secret_name}",
+      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${var.github_private_key_name}",
     ]
   }
 
