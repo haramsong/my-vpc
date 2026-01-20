@@ -32,16 +32,11 @@ resource "aws_lambda_permission" "apigw_invoke" {
 }
 
 # --- Custom Domain (ACM cert + APIGW domain + mapping)
-resource "aws_acm_certificate_validation" "cert" {
-  certificate_arn         = "arn:aws:acm:us-east-1:${data.aws_caller_identity.current.account_id}:certificate/${var.acm_id}"
-  validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
-}
-
 resource "aws_apigatewayv2_domain_name" "domain" {
   domain_name = var.domain_name
 
   domain_name_configuration {
-    certificate_arn = aws_acm_certificate_validation.cert.certificate_arn
+    certificate_arn = "arn:aws:acm:us-east-1:${data.aws_caller_identity.current.account_id}:certificate/${var.acm_id}"
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
