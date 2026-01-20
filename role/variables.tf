@@ -47,6 +47,10 @@ variable "security_alarm_role_name" {
   sensitive = true
 }
 
+variable "pr_bot_role_name" {
+  sensitive = true
+}
+
 variable "cdn_id" {
   sensitive = true
 }
@@ -64,5 +68,13 @@ variable "cost_notifier_bucket_name" {
 }
 
 variable "route53_hosted_zone_id" {
+  sensitive = true
+}
+
+variable "github_webhook_secret_name" {
+  sensitive = true
+}
+
+variable "github_private_key_name" {
   sensitive = true
 }

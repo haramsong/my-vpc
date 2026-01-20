@@ -121,7 +121,6 @@ data "aws_iam_policy_document" "cost_notifier_workspace_role_policy" {
   }
 }
 
-
 resource "aws_iam_policy" "cost_notifier_workspace_policy" {
   name        = "HaramCostNotifierPolicy"
   description = "This policy is for haram cost notifier"

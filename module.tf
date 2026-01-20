@@ -11,11 +11,14 @@ module "role" {
   lambda_role_name          = var.lambda_role_name
   cost_notifier_role_name   = var.cost_notifier_role_name
   security_alarm_role_name  = var.security_alarm_role_name
+  pr_bot_role_name          = var.pr_bot_role_name
   cdn_id                    = var.cdn_id
   blog_bucket_name          = var.blog_bucket_name
   log_bucket_name           = var.log_bucket_name
   cost_notifier_bucket_name = var.cost_notifier_bucket_name
   route53_hosted_zone_id    = var.route53_hosted_zone_id
+  github_webhook_secret_name = var.github_webhook_secret_name
+  github_private_key_name   = var.github_private_key_name
 }
 
 module "vpc" {
@@ -47,4 +50,16 @@ module "security_alarm" {
   aws_account_id    = var.aws_account_id
   aws_role_arn      = module.role.assume_security_alarm_role_arn
   slack_webhook_url = var.security_slack_webhook_url
+}
+
+module "pr_bot" {
+  source            = "./pr-bot"
+  region            = var.region
+  profile           = var.profile
+  aws_account_id    = var.aws_account_id
+  aws_role_arn      = module.role.assume_pr_bot_role_arn
+  slack_webhook_url = var.security_slack_webhook_url
+  github_webhook_secret_name = var.github_webhook_secret_name
+  github_private_key_name   = var.github_private_key_name
+  github_app_id = var.github_app_id
 }
