@@ -125,8 +125,7 @@ data "aws_iam_policy_document" "pr_bot_policy" {
       "ssm:DescribeParameters"
     ]
     resources = [
-      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${var.github_webhook_secret_name}",
-      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${var.github_private_key_name}",
+      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/*",
     ]
   }
 

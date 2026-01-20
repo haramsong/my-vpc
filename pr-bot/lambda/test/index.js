@@ -1,3 +1,4 @@
+import { withStep } from "step-common/handler.js";
 import { getCoverageSummaryFromWorkflow } from "step-common/github.js";
 
 const COVERAGE_DROP_FAIL = 5; // %p

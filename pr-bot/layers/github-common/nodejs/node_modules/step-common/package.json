@@ -1,0 +1,10 @@
+{
+  "name": "step-common",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./handler.js": "./handler.js",
+    "./github.js": "./github.js",
+    "./check.js": "./check.js"
+  }
+}

@@ -1,4 +1,4 @@
-import { verifyGithubSignature } from "./github.js";
+import { verifyGithubSignature, createInstallationToken } from "./github.js";
 import { invokeStep } from "./invoke.js";
 import { claimDeliveryId } from "./dedupe.js";
 
@@ -45,6 +45,12 @@ export async function handler(event) {
     }
 
     // 2️⃣ 공통 컨텍스트 생성
+    const installationId = payload.installation.id;
+
+    const githubToken = await createInstallationToken({
+      installationId,
+    });
+
     const ctx = {
       deliveryId,
       event: githubEvent,
@@ -57,6 +63,7 @@ export async function handler(event) {
         number: payload.pull_request.number,
         headSha: payload.pull_request.head.sha,
       },
+      githubToken, // ⭐️ 핵심
     };
 
     // 3️⃣ step 라우팅

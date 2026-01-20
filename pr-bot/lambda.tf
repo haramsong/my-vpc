@@ -44,6 +44,10 @@ resource "aws_lambda_function" "dispatcher" {
     }
   }
 
+  layers = [
+    aws_lambda_layer_version.github_common.arn
+  ]
+
   depends_on = [
     data.archive_file.dispatcher_zip
   ]
