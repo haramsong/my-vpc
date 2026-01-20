@@ -83,6 +83,18 @@ data "aws_iam_policy_document" "pr_bot_policy" {
     resources = ["*"]
   }
 
+  statement {
+    sid     = "ManageLambdaLayers"
+    effect  = "Allow"
+    actions = [
+      "lambda:PublishLayerVersion",
+      "lambda:GetLayerVersion",
+      "lambda:DeleteLayerVersion",
+      "lambda:ListLayerVersions"
+    ]
+    resources = ["*"]
+  }
+
   # =====================
   # IAM (Lambda Role 생성 & PassRole)
   # =====================

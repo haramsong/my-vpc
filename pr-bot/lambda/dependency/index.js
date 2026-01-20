@@ -1,4 +1,4 @@
-import { withStep } from "./step-common/handler.js";
+import { withStep } from "step-common/handler.js";
 
 /**
  * 정책 예시

@@ -1,0 +1,10 @@
+{
+  "name": "github-common-layer",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@octokit/app": "^14.0.0",
+    "@octokit/rest": "^21.0.0",
+    "adm-zip": "^0.5.10"
+  }
+}

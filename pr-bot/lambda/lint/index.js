@@ -1,4 +1,4 @@
-import { withStep } from "./step-common/handler.js";
+import { withStep } from "step-common/handler.js";
 
 export const handler = withStep({
   name: "lint / eslint",
