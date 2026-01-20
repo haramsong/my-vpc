@@ -135,7 +135,7 @@ data "aws_iam_policy_document" "invoke_steps" {
     sid     = "InvokeStepLambdas"
     actions = ["lambda:InvokeFunction"]
     resources = [
-      "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:pr-step-*"
+      "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:gitbot-step-*"
     ]
   }
 

@@ -34,3 +34,11 @@ variable "github_private_key_name" {
 variable "github_app_id" {
   sensitive = true
 }
+
+variable "domain_name" {
+  sensitive = true
+}
+
+variable "acm_id" {
+  sensitive = true
+}
