@@ -1,41 +1,64 @@
 import { withStep } from "step-common/handler.js";
+import { getLintReportFromWorkflow } from "step-common/github.js";
 
 export const handler = withStep({
   name: "lint / eslint",
 
   async run({ event, octokit }) {
-    const { repository, pullRequest } = event;
+    const { repository, workflowRunId } = event;
 
-    const files = await octokit.paginate(
-      octokit.rest.pulls.listFiles,
-      {
-        owner: repository.owner,
-        repo: repository.name,
-        pull_number: pullRequest.number,
-        per_page: 100,
-      }
-    );
+    // 1️⃣ eslint 결과 로드 (workflowRunId 기준)
+    const report = await getLintReportFromWorkflow({
+      octokit,
+      owner: repository.owner,
+      repo: repository.name,
+      runId: workflowRunId,
+    });
+
+    if (!report) {
+      return {
+        conclusion: "neutral",
+        title: "Lint skipped",
+        summary: "eslint artifact를 찾지 못했습니다.",
+      };
+    }
 
     const annotations = [];
+    let errorCount = 0;
+    let warningCount = 0;
 
-    for (const f of files) {
-      if (f.filename.endsWith(".js")) {
-        // 예시: 일부러 annotation 많이 생성
+    for (const file of report) {
+      for (const msg of file.messages) {
+        const level =
+          msg.severity === 2 ? "failure" : "warning";
+
+        if (msg.severity === 2) errorCount++;
+        if (msg.severity === 1) warningCount++;
+
         annotations.push({
-          path: f.filename,
-          start_line: 1,
-          end_line: 1,
-          annotation_level: "warning",
-          message: "예시 lint 경고입니다.",
+          path: file.filePath,
+          start_line: msg.line || 1,
+          end_line: msg.endLine || msg.line || 1,
+          annotation_level: level,
+          message: msg.message,
         });
       }
     }
 
-    if (annotations.length > 0) {
+    if (errorCount > 0) {
+      return {
+        conclusion: "failure",
+        title: "Lint errors",
+        summary: `❌ ESLint error ${errorCount}개\n⚠️ warning ${warningCount}개`,
+        annotations,
+      };
+    }
+
+    if (warningCount > 0) {
       return {
         conclusion: "neutral",
         title: "Lint warnings",
-        summary: `${annotations.length}개의 lint 경고가 발견되었습니다.`,
+        summary: `⚠️ ESLint warning ${warningCount}개`,
         annotations,
       };
     }
@@ -43,7 +66,7 @@ export const handler = withStep({
     return {
       conclusion: "success",
       title: "Lint passed",
-      summary: "Lint issue 없음",
+      summary: "ESLint 오류 및 경고 없음",
     };
   },
 });
