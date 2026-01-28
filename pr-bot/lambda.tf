@@ -11,6 +11,12 @@ data "archive_file" "step_zip" {
   output_path = "${path.module}/dist/${each.key}.zip"
 }
 
+data "archive_file" "github_common_layer_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/layers/github-common"
+  output_path = "${path.module}/dist/github-common-layer.zip"
+}
+
 resource "aws_lambda_function" "dispatcher" {
   function_name = "${local.name}-webhook-dispatcher"
   role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/HaramPRBotLambdaRole"
@@ -38,6 +44,10 @@ resource "aws_lambda_function" "dispatcher" {
     }
   }
 
+  layers = [
+    aws_lambda_layer_version.github_common.arn
+  ]
+
   depends_on = [
     data.archive_file.dispatcher_zip
   ]
@@ -57,7 +67,20 @@ resource "aws_lambda_function" "step" {
   timeout     = 60
   memory_size = 512
 
+  layers = [
+    aws_lambda_layer_version.github_common.arn
+  ]
+
   depends_on = [
     data.archive_file.step_zip
   ]
+}
+
+resource "aws_lambda_layer_version" "github_common" {
+  layer_name          = "github-common"
+  description         = "Octokit + common libs for GitHub bot"
+  compatible_runtimes = ["nodejs22.x"]
+
+  filename         = data.archive_file.github_common_layer_zip.output_path
+  source_code_hash = data.archive_file.github_common_layer_zip.output_base64sha256
 }

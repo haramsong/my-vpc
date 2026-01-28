@@ -1,99 +1,48 @@
-import { getCoverageSummaryFromWorkflow } from "./step-common/github.js";
-
-const COVERAGE_DROP_FAIL = 5; // %p
-const COVERAGE_DROP_WARN = 1; // %p
+import { withStep } from "step-common/handler.js";
+import { getCoverageSummaryFromWorkflow } from "step-common/github.js";
 
 export const handler = withStep({
   name: "test / coverage",
 
   async run({ event, octokit }) {
-    const { repository, pullRequest } = event;
+    const { repository, workflowRunId } = event;
 
-    // head coverage
-    const head = await getCoverageSummaryFromWorkflow({
+    const summary = await getCoverageSummaryFromWorkflow({
       octokit,
       owner: repository.owner,
       repo: repository.name,
-      headSha: pullRequest.headSha,
-      workflowName: "test",
+      runId: workflowRunId,
     });
 
-    if (!head) {
+    // ✅ coverage 자체가 없음
+    if (!summary) {
       return {
         conclusion: "neutral",
-        title: "Coverage missing",
+        title: "Tests skipped",
         summary: `
-        Coverage artifact를 찾지 못했습니다.
+이 저장소에는 테스트 또는 coverage 설정이 없습니다.
 
-        아래와 같이 GitHub Actions 설정이 필요합니다:
-
-        \`\`\`yaml
-        name: test
-
-        on:
-          pull_request:
-
-        jobs:
-          test:
-            runs-on: ubuntu-latest
-            steps:
-              - uses: actions/checkout@v4
-
-              - uses: actions/setup-node@v4
-                with:
-                  node-version: 20
-
-              - run: npm ci
-              - run: npm test -- --coverage --coverageReporters=json-summary
-
-              - uses: actions/upload-artifact@v4
-                with:
-                  name: coverage
-                  path: coverage/coverage-summary.json
-        \`\`\`
-
-        확인 사항:
-        - upload-artifact step 존재 여부
-        - artifact name: \`coverage\`
-        - path: \`coverage/coverage-summary.json\`
+- test script 없음
+- coverage artifact 없음
         `.trim(),
       };
     }
 
-    // base coverage
-    const base = await getCoverageSummaryFromWorkflow({
-      octokit,
-      owner: repository.owner,
-      repo: repository.name,
-      headSha: pullRequest.baseSha,
-      workflowName: "test",
-    });
+    const lines = summary.lines.pct;
 
-    const headLines = head.lines.pct;
-    const baseLines = base?.lines?.pct;
-
-    let diffLine = "";
-    let conclusion = "success";
-
-    if (typeof baseLines === "number") {
-      const diff = +(headLines - baseLines).toFixed(2);
-
-      diffLine = `\n\nCoverage diff: ${baseLines}% → ${headLines}% (${diff > 0 ? "+" : ""}${diff}%)`;
-
-      if (diff < -COVERAGE_DROP_FAIL) {
-        conclusion = "failure";
-      } else if (diff < -COVERAGE_DROP_WARN) {
-        conclusion = "neutral";
-      }
+    // 정책
+    if (lines < 70) {
+      return {
+        conclusion: "failure",
+        title: "Low coverage",
+        summary: `라인 커버리지가 낮습니다: ${lines}%`,
+      };
     }
 
     return {
-      conclusion,
-      title: "Coverage result",
-      summary: `
-      라인 커버리지: ${headLines}%
-      ${diffLine}
-      `.trim(),
+      conclusion: "success",
+      title: "Coverage OK",
+      summary: `라인 커버리지: ${lines}%`,
     };
   },
 });
